@@ -31,6 +31,7 @@ Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::resource('/exercises', \App\Http\Controllers\GymExerciseController::class );
     Route::post('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'update']);
     Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
+    Route::post('/schedules/{id}', [\App\Http\Controllers\GymScheduleController::class, 'update']);
     Route::resource('/sessions', \App\Http\Controllers\GymSessionsController::class );
 });
 

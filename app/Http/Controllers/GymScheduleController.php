@@ -55,9 +55,16 @@ class GymScheduleController extends Controller{
     /**
      * Display the specified resource.
      */
-    public function show(GymSchedule $gymSchedule)
+    public function show(int $id)
     {
-        //
+        $schedule = GymSchedule::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->get();
+
+        if($schedule)
+            return $this->success($schedule, "Scheda recuperata correttamente");
+        else
+            return $this->error('', "Scheda inesistente o di altro utente", 500);//
     }
 
     /**
@@ -71,9 +78,20 @@ class GymScheduleController extends Controller{
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GymSchedule $gymSchedule)
+    public function update(StoreScheduleRequest $request, int $id)
     {
-        //
+        $request->validated($request->all());
+        $schedule = GymSchedule::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->get();
+        if(isset($schedule))
+        $edited = GymSchedule::where('id', $id)->update([
+            'name' =>$request->name,
+            'description'=>$request->description,]);
+        if($edited)
+            return $this->success($edited, "Scheda ginnica modificata correttamente");
+        else
+            return $this->error('', "La scheda non è stata modificata", 500);
     }
 
     /**
