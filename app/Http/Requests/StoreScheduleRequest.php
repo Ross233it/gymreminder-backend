@@ -20,9 +20,8 @@ class StoreScheduleRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        $userId = Auth::id();
+    public function rules(): array    {
+
         return [
             'name' =>['required', 'string', 'max:100', 'unique:gym_schedules,name'],
             'description'=>['required','string', 'max:255'],

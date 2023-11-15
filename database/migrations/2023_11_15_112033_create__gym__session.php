@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //TODO Add validation dates - begin date -end date
-        Schema::create('gym_schedules', function (Blueprint $table) {
+        Schema::create('gym_sessions', function (Blueprint $table) {
             $table->id();
-            $table->string('name',35)->unique();
+            $table->string('name',150)->unique();
             $table->string('description', 150)->nullable();
-            $table->foreignId('user_id');
+            $table->foreignId('gym_schedules_id');
+            $table->foreign('gym_schedules_id')->references('id')->on('gym_schedules');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-         Schema::dropIfExists('gym_schedules');
+        Schema::dropIfExists('_gym__session');
     }
 };

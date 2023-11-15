@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GymSchedule extends Model
+class GymSession extends Model
 {
-    protected $table = "gym_schedules";
+    protected $table = "gym_sessions";
 
     protected $fillable = [
         'name',
         'description',
-        'user_id'
+        'gym_schedules_id'
     ];
 
     protected $hidden = [
@@ -26,8 +25,8 @@ class GymSchedule extends Model
      *                                  *
      ************************************/
 
-    public function gymExercises()
+    public function gymSchedule()
     {
-        return $this->belongsToMany(GymExercise::class, 'gym_exercises_lookup', 'gym_exercises_id', 'gym_schedules_id');
+        return $this->belongsTo(GymSchedule::class,  'gym_schedules_id', 'id',);
     }
 }

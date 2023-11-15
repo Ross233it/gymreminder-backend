@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreScheduleRequest;
 use App\Models\GymSchedule;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
@@ -35,9 +36,20 @@ class GymScheduleController extends Controller{
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreScheduleRequest $request)
     {
-        //
+        $userId = Auth::id();
+        $request->validated($request->all());
+        $schedule = GymSchedule::create([
+                'name' =>$request->name,
+                'description'=>$request->description,
+                'user_id'=>$userId
+        ]);
+
+        if($schedule)
+            return $this->success($schedule, "Scheda ginnica creata correttamente");
+        else
+            return $this->error('', "La scheda non è stata creata", 500);
     }
 
     /**
