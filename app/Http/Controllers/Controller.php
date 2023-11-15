@@ -9,4 +9,9 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+
+    public function test(){
+        return response()->json("Hai raggiunto il metodo test");
+
+    }
 }
