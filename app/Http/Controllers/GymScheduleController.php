@@ -3,29 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\GymSchedule;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class GymScheduleController extends Controller
-{
-    public function test(Request $request){
-        $data = [
-          'dato1' => "contenuto dato 1",
-          'dato2' => "contenuto dato 2",
-          'dato3' => "contenuto dato 3",
-          'dato4' => "contenuto dato 4",
-          'dato7' => "contenuto dato 7"
-        ];
 
-       //dd($request);
-        return response()->json(['message'=> 'funzione raggiunta', 'data'=> $data]);
+class GymScheduleController extends Controller{
 
-    }
+    use HttpResponses;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $userId = Auth::id();
+        $schedules = GymSchedule::where('user_id', $userId)->get();
+        if(isset($schedules))
+            return $this->success($schedules,'Le schede utente recueprate',200 );
+        else
+            return $this->error('','Impossibile recuperare le schede', 500 );
     }
 
     /**

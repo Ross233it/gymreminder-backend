@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,5 +28,8 @@ Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register
 Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::resource('/tasks', \App\Http\Controllers\TasksController::class);
     Route::post('/logout', [\App\Http\Controllers\AuthController::class,   'logout']);
+    Route::resource('/exercises', \App\Http\Controllers\GymExerciseController::class );
+    Route::post('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'update']);
+    Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
 });
 

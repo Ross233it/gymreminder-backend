@@ -2,26 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreExerciseRequest;
 use App\Models\GymExercise;
 use Illuminate\Http\Request;
-use App\Http\Utilities\Utilities;
-
+use App\Traits\HttpResponses;
 class GymExerciseController extends Controller
 {
+    use HttpResponses;
 
     /**
-     * Display a listing of the resource.
+     * Display a listing all exercises
      */
     public function index()
     {
-
-        //return  GymExercise::all()->toJson();
         $exercises = GymExercise::all();
-
         if(isset($exercises))
-            return Utilities::jsonPositiveResponse('Esercizi recuperati con successo', $exercises);
+           return $this->success($exercises,'Esercizi recuperati con successo',200 );
         else
-            return Utilities::jsonNegativeResponse('Impossibile recuperare gli esercizi');
+           return $this->error('','Impossibile recuperare gli esercizi', 500 );
     }
 
     /**
@@ -35,18 +33,29 @@ class GymExerciseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreExerciseRequest $request)
     {
-        $test = ["test" => "my json object"];
-        return $test->toJson();
+        $request->validated($request->all());
+        $exercise = GymExercise::create([
+            'name' =>$request->name,
+            'description'=>$request->description,
+        ]);
+        if($exercise)
+            return $this->success($exercise, "Esercizio creato correttamente");
+        else
+            return $this->error('', "Il nuovo esercizio non è stato creato", 500);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(GymExercise $gymExercises)
+    public function show(int $id)
     {
-        //
+        $exercise = GymExercise::find($id);
+        if($exercise)
+            return $this->success($exercise, "Esercizio recuperato correttamente");
+        else
+            return $this->error('', "Impossibile trovare l'esercizio", 500);
     }
 
     /**
@@ -60,9 +69,18 @@ class GymExerciseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GymExercise $gymExercises)
-    {
-        //
+    public function update(StoreExerciseRequest $request, $id){
+        $request->validated($request->all());
+
+        $exercise = GymExercise::where('id', $id)->update([
+            'name' =>$request->name,
+            'description'=>$request->description,
+        ]);
+
+        if($exercise)
+            return $this->success($exercise, "Esercizio modificato correttamente");
+        else
+            return $this->error('', "L' esercizio non è stato modificato", 500);
     }
 
     /**
