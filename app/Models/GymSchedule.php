@@ -16,8 +16,8 @@ class GymSchedule extends Model
     ];
 
     protected $hidden = [
-        'created_at',
-        'deleted_at'
+        'deleted_at',
+        'user_id'
     ];
 
     /************************************
@@ -30,4 +30,13 @@ class GymSchedule extends Model
     {
         return $this->belongsToMany(GymExercise::class, 'gym_exercises_lookup', 'gym_exercises_id', 'gym_schedules_id');
     }
+
+    /**
+     * Ritorna tutte le sessioni abbinate ad una scheda
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sessions(){
+        return $this->hasMany(GymSession::class, 'gym_schedules_id');
+    }
+
 }

@@ -29,4 +29,13 @@ class GymSession extends Model
     {
         return $this->belongsTo(GymSchedule::class,  'gym_schedules_id', 'id',);
     }
+
+//    public function exercises(){
+//        return $this->hasManyThrough(GymExercise::class,
+//                                    GymExercisesLockup::class,
+//                                     'gym_sessions_id',
+//                                    'id',
+//                                     'id',
+//                                    'gym_exercises_id');
+//    }
 }

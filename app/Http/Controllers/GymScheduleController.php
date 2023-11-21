@@ -15,10 +15,9 @@ class GymScheduleController extends Controller{
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index(){
         $userId = Auth::id();
-        $schedules = GymSchedule::where('user_id', $userId)->get();
+        $schedules = GymSchedule::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
         if(isset($schedules))
             return $this->success($schedules,'Le schede utente recueprate',200 );
         else
@@ -55,16 +54,16 @@ class GymScheduleController extends Controller{
     /**
      * Display the specified resource.
      */
-    public function show(int $id)
+    public function show()
     {
-        $schedule = GymSchedule::where('user_id', Auth::id())
-            ->where('id', $id)
-            ->get();
-
-        if($schedule)
-            return $this->success($schedule, "Scheda recuperata correttamente");
-        else
-            return $this->error('', "Scheda inesistente o di altro utente", 500);//
+        $userId = Auth::id();
+        if(Auth::check()){
+            $schedules = GymSchedule::where('user_id', $userId)->with('sessions')->orderBy('created_at', 'desc')->get();
+            if(isset($schedules))
+                return $this->success($schedules,'Le schede utente recueprate',200 );
+            else
+                return $this->error('','Impossibile recuperare le schede', 500 );
+        }
     }
 
     /**
@@ -101,4 +100,17 @@ class GymScheduleController extends Controller{
     {
         //
     }
+
+   public function scheduleWithSessions(int $schedule_id){
+        $userId = Auth::id();
+        if(Auth::check()){
+            $schedule = GymSchedule::where('user_id', $userId)
+                ->where('id', $schedule_id)
+                ->with('sessions')->orderBy('created_at', 'desc')->first();
+           if(isset($schedule))
+               return $this->success($schedule,'Scheda utente recueprata',200 );
+           else
+               return $this->error('','Impossibile recuperare le scheda', 500 );
+    }
+   }
 }

@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('gym_exercises_lookup', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement()->unique();
             $table->foreignId('gym_exercises_id');
+            $table->foreignId('gym_sessions_id');
             $table->foreignId('gym_schedules_id');
             $table->foreign('gym_exercises_id')->references('id')->on('gym_exercises');
+            $table->foreign('gym_sessions_id')->references('id')->on('gym_sessions');
             $table->foreign('gym_schedules_id')->references('id')->on('gym_schedules');
             $table->timestamps();
         });
