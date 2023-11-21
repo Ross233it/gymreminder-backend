@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class GymExercisesLockup extends Model
 {
-    use HasFactory;
+   protected $table = "gym_exercises_lookup";
 }

@@ -76,8 +76,9 @@ class GymSessionsController extends Controller
         if(Auth::check()){
             if($this->checkSession($sessionId))
                 $exercisesPerSession = GymSession::where('id',$sessionId)->with('exercises')->get();
+
             if($exercisesPerSession)
-                return $this->success($exercisesPerSession, "Sessioni recuperate correttamente");
+               return $this->success($exercisesPerSession, "Sessioni recuperate correttamente");
             else
                 return $this->error('', "La scheda non è stata creata", 500);
         }
@@ -91,17 +92,13 @@ class GymSessionsController extends Controller
     public function checkSession(int $sessionId){
         $userId = Auth::id();
         $userSchedules = GymSchedule::select('id')
-            ->where('user_id', $userId)
-            ->get()->pluck('id');
-       //return $this->success($userSchedules, "Schede recuperate correttamente");
+            ->where('user_id', $userId)->get()->pluck('id');
+
         $sessionSchedule = GymSession::select('gym_schedules_id')
-            ->where('gym_schedules_id', $sessionId)
-            ->first();//->pluck('gym_schedules_id');
-       // dd($userSchedules);
-       // return $this->success($sessionSchedule, "Schede recuperate correttamente");
+            ->where('gym_schedules_id', $sessionId)->first();
+
         if(isset($sessionSchedule))
              return ($userSchedules->contains($sessionSchedule->gym_schedules_id));
         return $this->error('', "Non è possibile recuperare la scheda", 500);
-        // return false;
     }
 }
