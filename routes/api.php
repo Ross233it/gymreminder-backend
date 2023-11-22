@@ -36,7 +36,7 @@ Route::group(['middleware'=>['auth:sanctum']], function(){
 
     Route::get('/schedules/{schedule_id}/sessions',[\App\Http\Controllers\GymScheduleController::class, 'scheduleWithSessions']);
 
-    Route::get('session/{session_id}/exercises', [\App\Http\Controllers\GymSessionsController::class, 'sessionWithExercises']);
+    Route::get('/schedules/{schedule_id}/session/{session_id}/exercises', [\App\Http\Controllers\GymSessionsController::class, 'sessionWithExercises']);
 
     Route::get('/test/{sessionId}', [\App\Http\Controllers\GymSessionsController::class, 'checkSession']);
 });
