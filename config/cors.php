@@ -20,7 +20,8 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://laravel_sanctum.test:5173'],
+    //'allowed_origins' => ['http://laravel_sanctum.test:5173'],
+    'allowed_origins' => [],
 
     'allowed_origins_patterns' => [],
 
