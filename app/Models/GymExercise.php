@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class GymExercise extends Model
@@ -24,12 +24,15 @@ class GymExercise extends Model
      *            Relations             *
      *                                  *
      ************************************/
-    public function media(){
+    public function appMedia(){
         return $this->hasMany(AppMedia::class, 'exercise_id', 'id');
     }
 
-    public function gymSchedules()
-    {
+    public function gymSchedules(){
         return $this->belongsToMany(GymSchedules::class, 'gym_exercises_lookup', 'gym_schedules_id', 'gym_exercises_id');
     }
+
+//    public function appMedia(){
+//        return $this->hasMany(AppMedia::class, 'exercise_id');
+//    }
 }

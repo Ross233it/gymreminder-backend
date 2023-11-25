@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,15 +27,21 @@ Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register
 Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::resource('/tasks', \App\Http\Controllers\TasksController::class);
     Route::post('/logout', [\App\Http\Controllers\AuthController::class,   'logout']);
+
     Route::resource('/exercises', \App\Http\Controllers\GymExerciseController::class );
     Route::post('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'update']);
+    Route::get ('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'show']);
+
+    Route::post('/exercise/{id}/user-data', [\App\Http\Controllers\GymExercisesUserDataController::class, 'create']);
+
     Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
     Route::post('/schedules/{id}', [\App\Http\Controllers\GymScheduleController::class, 'update']);
     Route::resource('/sessions', \App\Http\Controllers\GymSessionsController::class );
 
     Route::get('/schedules/{schedule_id}/sessions',[\App\Http\Controllers\GymScheduleController::class, 'scheduleWithSessions']);
 
-    Route::get('/schedules/{schedule_id}/session/{session_id}/exercises', [\App\Http\Controllers\GymSessionsController::class, 'sessionWithExercises']);
+    Route::get('/schedules/{schedule_id}/sessions/{session_id}/exercises', [\App\Http\Controllers\GymSessionsController::class, 'sessionWithExercises']);
+
 
     Route::get('/test/{sessionId}', [\App\Http\Controllers\GymSessionsController::class, 'checkSession']);
 });

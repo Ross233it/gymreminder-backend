@@ -18,7 +18,7 @@ return [
     //'paths' => ['/api/*', 'sanctum/csrf-cookie', '/test'],
     'paths' => [],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => [],
 
     //'allowed_origins' => ['http://laravel_sanctum.test:5173'],
     'allowed_origins' => [],

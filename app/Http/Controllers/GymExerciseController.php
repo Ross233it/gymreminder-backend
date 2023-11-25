@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 class GymExerciseController extends Controller
 {
-    use HttpResponses;
 
     /**
      * Display a listing all exercises
@@ -51,7 +50,7 @@ class GymExerciseController extends Controller
      */
     public function show(int $id)
     {
-        $exercise = GymExercise::find($id);
+        $exercise = GymExercise::with('appMedia')->find($id);
         if($exercise)
             return $this->success($exercise, "Esercizio recuperato correttamente");
         else
