@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreignId('session_id');
             $table->foreignId('exercise_id');
             $table->timestamp('date');
-            $table->tinyInteger('series');
-            $table->tinyInteger('repetitions');
-            $table->tinyInteger('weight');
+            $table->tinyInteger('series')->unsigned();
+            $table->tinyInteger('repetitions')->unsigned();
+            $table->smallInteger('weight')->unsigned();
             $table->timestamps();
         });
     }

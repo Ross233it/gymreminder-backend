@@ -17,7 +17,14 @@ class GymExercisesUserDataController extends Controller
      */
     public function index()
     {
-        //
+       if(Auth::check()){
+           $userData = GymExercisesUserData::where('user_id', Auth::id())->get();
+           if($userData)
+               return $this->success($userData, "Dati esercizi recuperati correttamente",200);
+           else
+               return $this->error('', "La scheda non è stata creata", 500);
+       }
+
     }
 
     /**
@@ -40,7 +47,7 @@ class GymExercisesUserDataController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -48,7 +55,17 @@ class GymExercisesUserDataController extends Controller
      */
     public function show(string $id)
     {
-        //
+        if(Auth::check()){
+            $userData = GymExercisesUserData::where('user_id', Auth::id())
+                        ->where('exercise_id', $id)
+                        ->limit(10)
+                        ->orderBy('date', 'DESC')
+                        ->get();
+            if($userData)
+                return $this->success($userData, "Dati esercizi recuperati correttamente",200);
+            else
+                return $this->error('', "Si è verificato un errore - dati non recuperati", 500);
+        }
     }
 
     /**

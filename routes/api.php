@@ -31,6 +31,7 @@ Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::resource('/exercises', \App\Http\Controllers\GymExerciseController::class );
     Route::post('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'update']);
     Route::get ('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'show']);
+    Route::get('/exercises/{id}/user-data', [\App\Http\Controllers\GymExercisesUserDataController::class, 'show']);
     Route::post('/exercises/{id}/user-data', [\App\Http\Controllers\GymExercisesUserDataController::class, 'create']);
 
     Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
@@ -43,6 +44,6 @@ Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::get('/schedules/{schedule_id}/sessions/{session_id}/exercises', [\App\Http\Controllers\GymSessionsController::class, 'sessionWithExercises']);
 
 
-    Route::get('/test/{sessionId}', [\App\Http\Controllers\GymSessionsController::class, 'checkSession']);
+
 });
 

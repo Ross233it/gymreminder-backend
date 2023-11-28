@@ -28,8 +28,11 @@ class GymExercise extends Model
         return $this->hasMany(AppMedia::class, 'exercise_id', 'id');
     }
 
+    /**
+     * Ritorna tutte le schede in cui è previsto l'esercizio
+     */
     public function gymSchedules(){
-        return $this->belongsToMany(GymSchedules::class, 'gym_exercises_lookup', 'gym_schedules_id', 'gym_exercises_id');
+        return $this->belongsToMany(GymSchedule::class, 'gym_exercises_lookup', 'gym_schedules_id', 'gym_exercises_id');
     }
 
 //    public function appMedia(){

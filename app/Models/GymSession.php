@@ -25,9 +25,9 @@ class GymSession extends Model
      *                                  *
      ************************************/
 
-    public function gymSchedule()
+    public function schedules()
     {
-        return $this->belongsTo(GymSchedule::class,  'gym_schedules_id', 'id',);
+        return $this->belongsToMany(GymSchedule::class, 'gym_exercises_loockup', 'gym_sessions_id', 'gym_schedules_id');
     }
 
     public function exercises(){

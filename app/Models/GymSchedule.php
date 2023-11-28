@@ -36,8 +36,10 @@ class GymSchedule extends Model
      * Ritorna tutte le sessioni abbinate ad una scheda
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function sessions(){
-        return $this->hasMany(GymSession::class, 'gym_schedules_id');
+    public function sessions()
+    {
+        return $this->belongsToMany(GymSession::class, 'gym_exercises_lookup', 'gym_schedules_id', 'gym_sessions_id')
+            ->distinct();
     }
 
     public function users()
