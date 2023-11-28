@@ -32,7 +32,7 @@ class GymSession extends Model
 
     public function exercises(){
         return $this->hasManyThrough(GymExercise::class,
-                                    GymExercisesLockup::class,
+                                    GymExercisesLookup::class,
                                      'gym_sessions_id',
                                     'id',
                                      'id',

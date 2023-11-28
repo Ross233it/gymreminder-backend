@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreScheduleRequest;
+use App\Models\GymExercisesLookup;
 use App\Models\GymSchedule;
+use App\Models\User;
 use App\Traits\HttpResponses;
-use Illuminate\Http\Request;
+use App\Models\GymScheduleLookup;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -16,14 +18,17 @@ class GymScheduleController extends Controller{
      * Display a listing of the resource.
      */
     public function index(){
-        $userId = Auth::id();
-        $schedules = GymSchedule::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
-        if(isset($schedules))
-            return $this->success($schedules,'Le schede utente recueprate',200 );
-        else
-            return $this->error('','Impossibile recuperare le schede', 500 );
+        if (Auth::check()) {
+            $schedules = User::with('gymSchedules')
+                             ->with('gymSchedules.sessions')
+                             ->get();
+            $schedules = ($schedules[0]['gymSchedules']);
+            if (isset($schedules))
+                return $this->success($schedules, 'Le schede utente recuperate', 200);
+            else
+                return $this->error('', 'Impossibile recuperare le schede', 500);
+        }
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -101,16 +106,26 @@ class GymScheduleController extends Controller{
         //
     }
 
-   public function scheduleWithSessions(int $schedule_id){
-        $userId = Auth::id();
-        if(Auth::check()){
-            $schedule = GymSchedule::where('user_id', $userId)
-                ->where('id', $schedule_id)
+    public function scheduleWithSessions(int $scheduleId){
+        if(Auth::check() && $this->checkScheduleId($scheduleId)){
+            $schedule = GymSchedule::where('id', $scheduleId)
                 ->with('sessions')->orderBy('created_at', 'desc')->first();
-           if(isset($schedule))
-               return $this->success($schedule,'Scheda utente recueprata',200 );
-           else
-               return $this->error('','Impossibile recuperare le scheda', 500 );
+            if(isset($schedule))
+                return $this->success($schedule,'Scheda utente recueprata',200 );
+            else
+                return $this->error('','Impossibile recuperare le scheda', 500 );
+        }
     }
-   }
+
+    /**
+     * Verifica se una scheda allenamento è associata ad un
+     * utente.
+     * @return boolean
+     */
+    private function checkScheduleId(int $scheduleId){
+        $scheduleIdList = GymScheduleLookup::select('gym_schedules_id')
+                            ->where('user_id', Auth::id())->get();
+        $scheduleIdList = $scheduleIdList->pluck('gym_schedules_id')->toArray();
+        return in_array($scheduleId, $scheduleIdList);
+    }
 }

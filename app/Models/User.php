@@ -31,6 +31,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        "email_verified_at",
+        "created_at",
+        "updated_at",
     ];
 
     /**
@@ -42,4 +45,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function gymSchedules()
+    {
+        return $this->belongsToMany(GymSchedule::class, 'gym_schedules_lookup', 'user_id', 'gym_schedules_id')
+            ->withPivot('is_active')
+            ->limit(10)
+            ->orderBy('gym_schedules_lookup.is_active', 'desc')
+            ->orderBy('gym_schedules_lookup.created_at', 'desc');
+    }
 }

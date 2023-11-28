@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GymExercise;
+use App\Models\GymExercisesLookup;
 use App\Models\GymSchedule;
+use App\Models\GymScheduleLookup;
 use App\Models\GymSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,10 +75,12 @@ class GymSessionsController extends Controller
      * @return \Illuminate\Http\JsonResponse|void
      * Verifica la sessione e restituisce gli esercizi ad essa collegati
      */
-    public function sessionWithExercises(int $sessionId){
-        if(Auth::check()){
-            if($this->checkSession($sessionId))
-                $exercisesPerSession = GymSession::where('id',$sessionId)->with('exercises')->get();
+    public function sessionWithExercises(int $schedule_id, int $session_id){
+        if(Auth::check() && $this->checkSessionId($schedule_id, $session_id)){;
+            $exercisesIds = GymExercisesLookup::where('gym_schedules_id', $schedule_id)
+                            ->where('gym_sessions_id', $session_id)
+                            ->get()->pluck('gym_exercises_id');
+            $exercisesPerSession = GymExercise::whereIn('id', $exercisesIds)->get();
 
             if($exercisesPerSession)
                return $this->success($exercisesPerSession, "Sessioni recuperate correttamente");
@@ -89,16 +94,17 @@ class GymSessionsController extends Controller
      * @return mixed
      * Verifica se la sessione richiesta appartiene a quelle dell'utente
      */
-    public function checkSession(int $sessionId){
-        $userId = Auth::id();
-        $userSchedules = GymSchedule::select('id')
-            ->where('user_id', $userId)->get()->pluck('id');
+     private function checkSessionId(int $schedule_id, int $session_id){
+        $userSchedules = GymScheduleLookup::select('gym_schedules_id')
+            ->where('user_id',Auth::id())
+            ->where('gym_schedules_id', $schedule_id)->first();
 
-        $sessionSchedule = GymSession::select('gym_schedules_id')
-            ->where('gym_schedules_id', $sessionId)->first();
+        $sessionSchedule = GymExercisesLookup::select('id')
+            ->where('gym_schedules_id', $schedule_id)
+            ->where('gym_sessions_id', $session_id)->first();
 
-        if(isset($sessionSchedule))
-             return ($userSchedules->contains($sessionSchedule->gym_schedules_id));
-        return $this->error('', "Non è possibile recuperare la scheda", 500);
+        if(isset($userSchedules) && isset($sessionSchedule))
+            return true;
+        return false;
     }
 }

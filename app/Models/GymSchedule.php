@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class GymSchedule extends Model
 {
@@ -37,6 +38,12 @@ class GymSchedule extends Model
      */
     public function sessions(){
         return $this->hasMany(GymSession::class, 'gym_schedules_id');
+    }
+
+    public function users()
+    {
+        $userId = Auth::id();
+        return $this->belongsToMany(User::class, 'gym_schedules_lookup', 'gym_schedules_id', 'user_id')->where('user_id', $userId);
     }
 
 }

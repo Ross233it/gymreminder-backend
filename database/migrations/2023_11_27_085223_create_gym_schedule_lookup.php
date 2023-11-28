@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gym_exercises_user_data', function (Blueprint $table) {
+        Schema::create('gym_schedules_lookup', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->foreignId('session_id');
-            $table->foreignId('exercise_id');
-            $table->timestamp('date');
-            $table->tinyInteger('series');
-            $table->tinyInteger('repetitions');
-            $table->tinyInteger('weight');
+            $table->foreignId('gym_schedules_id');
+            $table->boolean('is_active')->default(false);
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('gym_schedules_id')->references('id')->on('gym_schedules');
+            $table->unique(['user_id', 'gym_schedules_id']);
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gym_exercises_user_data');
+        Schema::dropIfExists('gym_schedules_lookup');
     }
 };

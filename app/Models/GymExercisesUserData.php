@@ -11,6 +11,7 @@ class GymExercisesUserData extends Model
     protected $fillable = [
         'user_id',
         'session_id',
+        'exercise_id',
         'date',
         'series',
         'repetitions',

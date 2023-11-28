@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 class GymExerciseController extends Controller
 {
-
+    use HttpResponses;
     /**
      * Display a listing all exercises
      */

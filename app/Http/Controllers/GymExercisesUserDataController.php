@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExerciseUserDataRequest;
+use App\Models\GymExercisesUserData;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class GymExercisesUserDataController extends Controller
 {
+    use HttpResponses;
     /**
      * Display a listing of the resource.
      */
@@ -21,8 +26,11 @@ class GymExercisesUserDataController extends Controller
     public function create(StoreExerciseUserDataRequest $request)
     {
         $request->validated($request->all());
-        if(isset($exercises))
-            return $this->success($exercises,'Esercizi recuperati con successo',200 );
+        $request['date'] = Carbon::now();
+        $request['user_id'] = Auth::id();
+        $exercisesUserData = GymExercisesUserData::create($request->all());
+        if(isset($exercisesUserData))
+            return $this->success($exercisesUserData,'Esercizi inseriti con successo',200 );
         else
             return $this->error('','Impossibile recuperare gli esercizi', 500 );
     }
