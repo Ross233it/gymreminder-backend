@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('gym_exercises', function (Blueprint $table) {
             $table->id();
             $table->string('name',35)->unique();
-            $table->string('description', 150)->nullable();
+            $table->string('description', 500)->nullable();
             $table->string('ambito', 50)->nullable();
             $table->timestamps();
         });

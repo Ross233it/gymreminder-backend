@@ -13,9 +13,14 @@ return new class extends Migration
     {
         Schema::create('gym_exercises_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
+            $table->foreignId('schedule_id');
+            $table->foreignId('session_id');
+            $table->foreignId('exercise_id');
             $table->tinyInteger('suggested_series');
             $table->tinyInteger('suggested_repetitions');
             $table->tinyInteger('suggested_weight');
+            $table->unique(["user_id", "schedule_id", "session_id", "exercise_id"]);
             $table->timestamps();
         });
     }

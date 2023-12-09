@@ -50,7 +50,7 @@ class GymExerciseController extends Controller
      */
     public function show(int $id)
     {
-        $exercise = GymExercise::with('appMedia')->find($id);
+        $exercise = GymExercise::with(['appMedia'])->find($id);
         if($exercise)
             return $this->success($exercise, "Esercizio recuperato correttamente");
         else

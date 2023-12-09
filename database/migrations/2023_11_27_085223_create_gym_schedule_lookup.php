@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('gym_schedules_id');
+            $table->timestamp('deadline');
             $table->boolean('is_active')->default(false);
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('gym_schedules_id')->references('id')->on('gym_schedules');

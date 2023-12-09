@@ -50,6 +50,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(GymSchedule::class, 'gym_schedules_lookup', 'user_id', 'gym_schedules_id')
             ->withPivot('is_active')
+            ->withPivot('deadline')
             ->limit(10)
             ->orderBy('gym_schedules_lookup.is_active', 'desc')
             ->orderBy('gym_schedules_lookup.created_at', 'desc');

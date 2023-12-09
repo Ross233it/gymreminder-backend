@@ -48,4 +48,5 @@ class GymSchedule extends Model
         return $this->belongsToMany(User::class, 'gym_schedules_lookup', 'gym_schedules_id', 'user_id')->where('user_id', $userId);
     }
 
+
 }

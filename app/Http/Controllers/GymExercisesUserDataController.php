@@ -24,7 +24,6 @@ class GymExercisesUserDataController extends Controller
            else
                return $this->error('', "La scheda non è stata creata", 500);
        }
-
     }
 
     /**
@@ -89,6 +88,14 @@ class GymExercisesUserDataController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if(Auth::check()){
+            $userId = Auth::id();
+            $currentItem = GymExercisesUserData::where('id', $id)->first();
+            if($currentItem->user_id == $userId)
+                $deleted = $currentItem->delete();
+            if(isset($deleted))
+                return $this->success($id, "Dati esercizi recuperati correttamente",200);
+        }
+        return $this->error('', "Si è verificato un errore - dati non cancellati", 500);
     }
 }
