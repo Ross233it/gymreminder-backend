@@ -34,7 +34,15 @@ class GymExercisesUserDataController extends Controller
         $request->validated($request->all());
         $request['date'] = Carbon::now();
         $request['user_id'] = Auth::id();
-        $exercisesUserData = GymExercisesUserData::create($request->all());
+
+        if($request->id == null)
+            $exercisesUserData = GymExercisesUserData::create($request->all());
+        else{
+           $exercisesUserData = GymExercisesUserData::where('id', $request->id)->update([
+               'series' => $request->series,
+               'repetitions' => $request->repetitions,
+               'weight' => $request->weight,
+           ]);}
         if(isset($exercisesUserData))
             return $this->success($exercisesUserData,'Esercizi inseriti con successo',200 );
         else

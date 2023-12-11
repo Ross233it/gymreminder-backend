@@ -35,6 +35,7 @@ class GymExerciseController extends Controller
     public function store(StoreExerciseRequest $request)
     {
         $request->validated($request->all());
+
         $exercise = GymExercise::create([
             'name' =>$request->name,
             'description'=>$request->description,

@@ -23,6 +23,7 @@ class StoreExerciseUserDataRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' =>  ['integer', 'min:0', 'max:100000'],
             'session_id' => ['required','integer', 'min:0', 'max:100000'],
             'exercise_id'=> ['required','integer', 'min:0', 'max:100000'],
             'series'     => ['required','integer', 'min:0', 'max:100'],
