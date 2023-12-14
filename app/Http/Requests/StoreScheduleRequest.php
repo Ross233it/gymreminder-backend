@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class StoreScheduleRequest extends FormRequest
 {
@@ -23,7 +23,10 @@ class StoreScheduleRequest extends FormRequest
     public function rules(): array    {
 
         return [
-            'name' =>['required', 'string', 'max:100', 'unique:gym_schedules,name'],
+            'id' =>  ['nullable' ,'integer', 'min:0', 'max:100000'],
+            'name' =>['required', 'string', 'max:30',
+                        Rule::unique('gym_schedules', 'name')
+                            ->ignore($this->route('scheduleId'))],
             'description'=>['required','string', 'max:255'],
         ];
     }

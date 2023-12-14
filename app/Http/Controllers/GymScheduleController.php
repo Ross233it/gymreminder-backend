@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Traits\HttpResponses;
 use App\Models\GymScheduleLookup;
 use Illuminate\Support\Facades\Auth;
+use http\Client\Request;
+use function Symfony\Component\String\s;
 
 
 class GymScheduleController extends Controller{
@@ -19,16 +21,50 @@ class GymScheduleController extends Controller{
      */
     public function index(){
         if (Auth::check()) {
-            $schedules = User::with('gymSchedules')
-                             ->with('gymSchedules.sessions')
-                             ->get();
-            $schedules = ($schedules[0]['gymSchedules']);
+                $schedules = User::with('gymSchedules')
+                    ->with('gymSchedules.sessions')
+                    ->where('id', Auth::id())
+                    ->get();
+                $schedules = ($schedules[0]['gymSchedules']);
+        }
+        if (isset($schedules))
+            return $this->success($schedules, 'Le schede utente recuperate', 200);
+        else
+            return $this->error('', 'Impossibile recuperare le schede', 500);
+        }
+
+        public function indexAdmin(){
+            $schedules = GymSchedule::with('sessions')
+                        ->orderBy('created_at', 'DESC')
+                        ->get();
             if (isset($schedules))
                 return $this->success($schedules, 'Le schede utente recuperate', 200);
             else
                 return $this->error('', 'Impossibile recuperare le schede', 500);
         }
-    }
+
+        public function duplicate($scheduleId){
+            $schedule = GymSchedule::with("gymExercisesLookup")->find($scheduleId);
+
+            $newSchedule = GymSchedule::create([
+                'name' =>$schedule->name.rand(0,9),
+                'description'=>$schedule->description,
+            ]);
+            if($newSchedule)
+                $newId = $newSchedule->id;
+            $data = $schedule->gymExercisesLookup;
+            $modifiedData = $data->map(function ($item) use ($newId) {
+                $item['id'] = '';
+                $item['gym_schedules_id'] = $newId;
+                return $item;
+            });
+            $scheduleData = GymExercisesLookup::insert($modifiedData->toArray());
+            if($scheduleData)
+                return $this->success($newSchedule, "Scheda ginnica duplicata correttamente");
+            else
+                return $this->error('', "La scheda non è stata duplicata", 500);
+
+        }
     /**
      * Show the form for creating a new resource.
      */
@@ -40,16 +76,20 @@ class GymScheduleController extends Controller{
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreScheduleRequest $request)
+//    public function store(StoreScheduleRequest $request, $scheduleId = null)
+    public function store(StoreScheduleRequest $request, $scheduleId = null)
     {
-        $userId = Auth::id();
         $request->validated($request->all());
-        $schedule = GymSchedule::create([
+        if($scheduleId === null)
+            $schedule = GymSchedule::create([
                 'name' =>$request->name,
                 'description'=>$request->description,
-                'user_id'=>$userId
-        ]);
-
+            ]);
+        else
+            $schedule = GymSchedule::where('id', $scheduleId)->update([
+                'name' => $request->name,
+                'description' => $request->description,
+            ]);
         if($schedule)
             return $this->success($schedule, "Scheda ginnica creata correttamente");
         else
@@ -103,7 +143,20 @@ class GymScheduleController extends Controller{
      */
     public function destroy(GymSchedule $gymSchedule)
     {
-        //
+//        GymSchedule::
+    }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function delete(int $scheduleId)
+    {
+        $toDelete = GymSchedule::find($scheduleId);
+
+        if($toDelete) {
+            $deleted = $toDelete->delete();
+            return $this->success($deleted, "Scheda ginnica eliminata");
+        }else
+            return $this->error('', "La scheda non è stata eliminata", 500);
     }
 
     public function scheduleWithSessions(int $scheduleId){

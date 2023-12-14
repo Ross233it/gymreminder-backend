@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GymScheduleController;
 use App\Http\Controllers\GymExercisesUserDataController;
+use App\Http\Controllers\GymExerciseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,22 +25,34 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [\App\Http\Controllers\AuthController::class,    'login']);
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
 
-//Protected routes
-//definiamo un grouppo di rotte protette dal middleware auth:sanctum
+//Admin routes
+Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
+    Route::get('/admin/users',[\App\Http\Controllers\UsersController::class, 'index']);
+    Route::post('/admin/users/{userId}',[\App\Http\Controllers\UsersController::class, 'store']);
+    Route::delete('/admin/users/{userId}',[\App\Http\Controllers\UsersController::class, 'delete']);
+
+    Route::get('/admin/schedules',[\App\Http\Controllers\GymScheduleController::class, 'indexAdmin']);
+    Route::delete('/admin/schedules/{scheduleId}',[GymScheduleController::class, 'delete']);
+    Route::post('/admin/schedules/{scheduleId}/duplicate',[GymScheduleController::class, 'duplicate']);
+    Route::post('/admin/schedules',[GymScheduleController::class, 'store']);
+    Route::post('/admin/schedules/{scheduleId}',[GymScheduleController::class, 'store']);
+});
+
+//User routes
 Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::resource('/tasks', \App\Http\Controllers\TasksController::class);
     Route::post('/logout', [\App\Http\Controllers\AuthController::class,   'logout']);
 
-    Route::resource('/exercises', \App\Http\Controllers\GymExerciseController::class );
-    Route::post('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'update']);
-    Route::get ('/exercises/{id}', [\App\Http\Controllers\GymExerciseController::class, 'show']);
+    Route::resource('/exercises', GymExerciseController::class );
+    Route::post('/exercises/{id}', [GymExerciseController::class, 'update']);
+    Route::get ('/exercises/{id}', [GymExerciseController::class, 'show']);
     Route::get('/exercises/{id}/user-data',  [GymExercisesUserDataController::class, 'show']);
     Route::post('/exercises/{id}/user-data', [GymExercisesUserDataController::class, 'create']);
     Route::delete('/user-data/{id}',         [GymExercisesUserDataController::class, 'destroy']);
 
-    Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
-
-    Route::post('/schedules/{id}', [\App\Http\Controllers\GymScheduleController::class, 'update']);
+//    Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
+    Route::get('/schedules', [GymScheduleController::class, 'index']);
+    //Route::post('/schedules/{id}', [GymScheduleController::class, 'update']);
     Route::resource('/sessions', \App\Http\Controllers\GymSessionsController::class );
 
 

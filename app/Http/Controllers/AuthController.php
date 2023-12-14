@@ -44,7 +44,6 @@ class AuthController extends Controller
         ]);
     }
 
-
    public function logout(Request $request){
         if(Auth::check()){
                 $request->user()->tokens()->delete();

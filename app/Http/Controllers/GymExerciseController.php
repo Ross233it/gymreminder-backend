@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExerciseRequest;
 use App\Models\GymExercise;
-use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 class GymExerciseController extends Controller
 {

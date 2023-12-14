@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GymSchedule extends Model
 {
+    use SoftDeletes;
+
     protected $table = "gym_schedules";
 
     protected $fillable = [
@@ -18,7 +20,8 @@ class GymSchedule extends Model
 
     protected $hidden = [
         'deleted_at',
-        'user_id'
+        'user_id',
+        'deleted_at'
     ];
 
     /************************************
@@ -32,6 +35,10 @@ class GymSchedule extends Model
         return $this->belongsToMany(GymExercise::class, 'gym_exercises_lookup', 'gym_exercises_id', 'gym_schedules_id');
     }
 
+    public function gymExercisesLookup(){
+        return $this->hasMany(GymExercisesLookup::class, 'gym_schedules_id', 'id');
+
+    }
     /**
      * Ritorna tutte le sessioni abbinate ad una scheda
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -47,6 +54,5 @@ class GymSchedule extends Model
         $userId = Auth::id();
         return $this->belongsToMany(User::class, 'gym_schedules_lookup', 'gym_schedules_id', 'user_id')->where('user_id', $userId);
     }
-
 
 }
