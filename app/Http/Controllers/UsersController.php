@@ -16,45 +16,37 @@ class UsersController extends Controller
         $this->CrudUtilities = $CrudUtilities;
     }
 
+//    public function index(){
+//        $users = User::orderBy('name')->get();
+//        if (isset($users))
+//            return $this->success($users, 'Utenti recuperate', 200);
+//        else
+//            return $this->error('', 'Impossibile recuperare gli utenti', 500);
+//    }
     public function index(){
-        $users = User::orderBy('name')->get();
-        if (isset($users))
-            return $this->success($users, 'Utenti recuperate', 200);
-        else
-            return $this->error('', 'Impossibile recuperare gli utenti', 500);
+       return $this->CrudUtilities->indexRecord(new User, 'name', 'ASC');
     }
 
-//    public function store(EditUserRequest $request, $userId = null){
-//        if($userId != null){
-//            $request->validated($request->all());
-//            $user = User::where('id', $userId)->update([
-//                'name' => $request->name,
-//                'email' => $request->email,
-//            ]);
-//        }
-//        if (isset($user))
-//            return $this->success($user, 'Utente modificato', 200);
-//        else
-//            return $this->error('', 'Impossibile modificare utente', 500);
-//    }
-//    public function store(EditUserRequest $request, $userId = null){
-//        if($userId != null){
-//            $request->validated($request->all());
-//            $user = User::where('id', $userId)->update([
-//                'name' => $request->name,
-//                'email' => $request->email,
-//            ]);
-//        }
-//        if (isset($user))
-//            return $this->success($user, 'Utente modificato', 200);
-//        else
-//            return $this->error('', 'Impossibile modificare utente', 500);
-//    }
+    public function store(EditUserRequest $request, $userId = null){
+        if($userId != null){
+            $request->validated($request->all());
+            $data = ['name'  => $request->name,
+                     'email' => $request->email];
+            return $this->CrudUtilities->editRecord(new User, $userId, $data);
+        }
+    }
     /**
      * Remove the specified resource from storage.
      */
     public function delete(int $userId){
-        $model = new User;
-        $this->CrudUtilities->deleteRecord($model, $userId);
+        return $this->CrudUtilities->deleteRecord(new User, $userId);
+    }
+
+    public function getUserSchedules(int $userId){
+        $user = User::where('id', $userId)->with('gymSchedules')->first();
+        if (isset($user))
+            return $this->success($user, 'Utenti recuperate', 200);
+        else
+            return $this->error('', 'Impossibile recuperare gli utenti', 500);
     }
 }

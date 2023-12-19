@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\TestMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -69,5 +70,6 @@ class Kernel extends HttpKernel
     ];
     protected $routeMiddleware = [
         'is_admin' => \App\Http\Middleware\CheckIsAdmin::class,
+        'test_middleware'=>\App\Http\Middleware\TestMiddleware::class
     ];
 }

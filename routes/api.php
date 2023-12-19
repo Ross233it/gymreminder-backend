@@ -24,12 +24,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Public routes
 Route::post('/login', [\App\Http\Controllers\AuthController::class,    'login']);
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
-
+Route::get('/test/{id}', [\App\Http\Controllers\AppMediaController::class, 'test'])
+    ->middleware('test_middleware')
+    ->name('test');
 //Admin routes
 Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::get('/admin/users',[\App\Http\Controllers\UsersController::class, 'index']);
+    Route::get('/admin/users/{userId}/schedules',[\App\Http\Controllers\UsersController::class, 'getUserSchedules'])->name('getUserSchedules');
     Route::post('/admin/users/{userId}',[\App\Http\Controllers\UsersController::class, 'store']);
     Route::delete('/admin/users/{userId}',[\App\Http\Controllers\UsersController::class, 'delete']);
+
 
     Route::get('/admin/schedules',[\App\Http\Controllers\GymScheduleController::class, 'indexAdmin']);
     Route::delete('/admin/schedules/{scheduleId}',[GymScheduleController::class, 'delete']);
@@ -50,9 +54,9 @@ Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::post('/exercises/{id}/user-data', [GymExercisesUserDataController::class, 'create']);
     Route::delete('/user-data/{id}',         [GymExercisesUserDataController::class, 'destroy']);
 
-//    Route::resource('/schedules', \App\Http\Controllers\GymScheduleController::class );
     Route::get('/schedules', [GymScheduleController::class, 'index']);
-    //Route::post('/schedules/{id}', [GymScheduleController::class, 'update']);
+
+    Route::get('/schedules/{id}', [GymScheduleController::class, 'update']);
     Route::resource('/sessions', \App\Http\Controllers\GymSessionsController::class );
 
 

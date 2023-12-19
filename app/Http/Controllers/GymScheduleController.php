@@ -9,13 +9,17 @@ use App\Models\User;
 use App\Traits\HttpResponses;
 use App\Models\GymScheduleLookup;
 use Illuminate\Support\Facades\Auth;
-use http\Client\Request;
-use function Symfony\Component\String\s;
+use App\Http\Utilities\CrudUtilities;
 
 
 class GymScheduleController extends Controller{
 
     use HttpResponses;
+    protected $CrudUtilities;
+
+    public function __construct(CrudUtilities $CrudUtilities){
+        $this->CrudUtilities = $CrudUtilities;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -45,7 +49,6 @@ class GymScheduleController extends Controller{
 
         public function duplicate($scheduleId){
             $schedule = GymSchedule::with("gymExercisesLookup")->find($scheduleId);
-
             $newSchedule = GymSchedule::create([
                 'name' =>$schedule->name.rand(0,9),
                 'description'=>$schedule->description,
@@ -76,7 +79,6 @@ class GymScheduleController extends Controller{
     /**
      * Store a newly created resource in storage.
      */
-//    public function store(StoreScheduleRequest $request, $scheduleId = null)
     public function store(StoreScheduleRequest $request, $scheduleId = null)
     {
         $request->validated($request->all());
@@ -126,8 +128,8 @@ class GymScheduleController extends Controller{
     {
         $request->validated($request->all());
         $schedule = GymSchedule::where('user_id', Auth::id())
-            ->where('id', $id)
-            ->get();
+                    ->where('id', $id)
+                    ->get();
         if(isset($schedule))
         $edited = GymSchedule::where('id', $id)->update([
             'name' =>$request->name,
@@ -154,6 +156,8 @@ class GymScheduleController extends Controller{
 
         if($toDelete) {
             $deleted = $toDelete->delete();
+            GymExercisesLookup::where('gym_schedules_id', $scheduleId)->delete();
+            GymScheduleLookup::where('gym_schedules_id', $scheduleId)->delete();
             return $this->success($deleted, "Scheda ginnica eliminata");
         }else
             return $this->error('', "La scheda non è stata eliminata", 500);
@@ -162,7 +166,9 @@ class GymScheduleController extends Controller{
     public function scheduleWithSessions(int $scheduleId){
         if(Auth::check() && $this->checkScheduleId($scheduleId)){
             $schedule = GymSchedule::where('id', $scheduleId)
-                ->with('sessions')->orderBy('created_at', 'desc')->first();
+                        ->with('sessions')
+                        ->orderBy('created_at', 'desc')
+                        ->first();
             if(isset($schedule))
                 return $this->success($schedule,'Scheda utente recueprata',200 );
             else

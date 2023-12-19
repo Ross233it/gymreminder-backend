@@ -30,7 +30,6 @@ class AuthController extends Controller
         ]);
     }
 
-
     public function register(StoreUserRequest $request){
         $request->validated($request->all());
         $user = User::create([
