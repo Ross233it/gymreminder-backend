@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class GymExercise extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'gym_exercises';
 
     protected $fillable = [
         'name',
         'description',
+        'ambito'
     ];
 
     protected $hidden = [
-        'created_at',
         'deleted_at'
     ];
 
@@ -44,4 +47,6 @@ class GymExercise extends Model
     public function gymSchedules(){
         return $this->belongsToMany(GymSchedule::class, 'gym_exercises_lookup', 'gym_schedules_id', 'gym_exercises_id');
     }
+
+
 }

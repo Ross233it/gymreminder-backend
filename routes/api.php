@@ -3,8 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GymScheduleController;
-use App\Http\Controllers\GymExercisesUserDataController;
+use App\Http\Controllers\GymSessionsController;
 use App\Http\Controllers\GymExerciseController;
+use App\Http\Controllers\GymExercisesUserDataController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -29,17 +31,37 @@ Route::get('/test/{id}', [\App\Http\Controllers\AppMediaController::class, 'test
     ->name('test');
 //Admin routes
 Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
+    //Users - admin
     Route::get('/admin/users',[\App\Http\Controllers\UsersController::class, 'index']);
     Route::get('/admin/users/{userId}/schedules',[\App\Http\Controllers\UsersController::class, 'getUserSchedules'])->name('getUserSchedules');
     Route::post('/admin/users/{userId}',[\App\Http\Controllers\UsersController::class, 'store']);
     Route::delete('/admin/users/{userId}',[\App\Http\Controllers\UsersController::class, 'delete']);
 
-
-    Route::get('/admin/schedules',[\App\Http\Controllers\GymScheduleController::class, 'indexAdmin']);
+    //Schedules - admin
+    Route::get('/admin/schedules',                [GymScheduleController::class, 'indexAdmin']);
+    Route::get('/admin/schedules-list',           [GymScheduleController::class, 'schedulesList']);
     Route::delete('/admin/schedules/{scheduleId}',[GymScheduleController::class, 'delete']);
     Route::post('/admin/schedules/{scheduleId}/duplicate',[GymScheduleController::class, 'duplicate']);
-    Route::post('/admin/schedules',[GymScheduleController::class, 'store']);
-    Route::post('/admin/schedules/{scheduleId}',[GymScheduleController::class, 'store']);
+    Route::post('/admin/schedules',                       [GymScheduleController::class, 'store']);
+    Route::post('/admin/schedules/{scheduleId}',          [GymScheduleController::class, 'store']);
+
+    //Sessions - admin
+    Route::post('/admin/sessions/{sessionId}/duplicate',[GymSessionsController::class, 'duplicate']);
+    Route::post('/admin/sessions',                      [GymSessionsController::class, 'store']);
+    Route::post('/admin/sessions/{sessionId}',          [GymSessionsController::class, 'store']);
+    Route::get( '/admin/sessions',                      [GymSessionsController::class, 'index']);
+    Route::delete('/admin/sessions/{id}',               [GymSessionsController::class, 'delete']);
+
+    //Exercises -admin
+    Route::get('/admin/exercises',                        [GymExerciseController::class, 'indexAdmin']);
+    Route::get('/admin/exercises/{exerciseId}/media',     [GymExerciseController::class, 'getExerciseWithMedia']);
+    Route::post('/admin/exercises/{exerciseId}/duplicate',[GymExerciseController::class, 'duplicate']);
+    Route::post('/admin/exercises',                       [GymExerciseController::class, 'store']);
+    Route::post('/admin/exercises/{exerciseId}',          [GymExerciseController::class, 'store']);
+    Route::delete('/admin/exercises/{exercisesId}',       [GymExerciseController::class, 'delete']);
+
+    //Media - admin
+    Route::post('/upload-image',[\App\Models\AppMedia::class, 'uploadFile']);
 });
 
 //User routes

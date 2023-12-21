@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreExerciseRequest extends FormRequest
+class StoreSessionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +23,11 @@ class StoreExerciseRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' =>  ['nullable' ,'integer', 'min:0', 'max:100000'],
             'name' =>['required', 'string', 'max:30',
-                Rule::unique('gym_exercises', 'name')
-                    ->ignore($this->route('exerciseId'))],
-            'description'=>['required','string', 'max:500'],
-            'ambito'=>['required','string', 'max:30']
+                Rule::unique('gym_sessions', 'name')
+                    ->ignore($this->route('sessionId'))],
+            'description'=>['required','string', 'max:255'],
         ];
     }
 }

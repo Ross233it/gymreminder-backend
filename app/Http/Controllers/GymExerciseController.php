@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExerciseRequest;
 use App\Models\GymExercise;
+use App\Models\GymExercisesLookup;
 use App\Traits\HttpResponses;
 class GymExerciseController extends Controller
 {
@@ -20,6 +21,27 @@ class GymExerciseController extends Controller
            return $this->error('','Impossibile recuperare gli esercizi', 500 );
     }
 
+    public function indexAdmin(){
+        $schedules = GymExercise::orderBy('created_at', 'DESC')->get();
+        if (isset($schedules))
+            return $this->success($schedules, 'Le schede utente recuperate', 200);
+        else
+            return $this->error('', 'Impossibile recuperare le schede', 500);
+    }
+
+    public function duplicate($exerciseId)
+    {
+        $exercise = GymExercise::find($exerciseId);
+        $newExercise = GymExercise::create([
+            'name'        => $exercise->name . rand(0, 9),
+            'description' => $exercise->description,
+            'ambito'      => $exercise->ambito
+        ]);
+        if($newExercise)
+            return $this->success($newExercise, "Esercizio duplicato correttamente");
+        else
+            return $this->error('', "L'esercizio' non è stato duplicato", 500);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -31,18 +53,26 @@ class GymExerciseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreExerciseRequest $request)
+    public function store(StoreExerciseRequest $request, int $exerciseId = null)
     {
         $request->validated($request->all());
 
-        $exercise = GymExercise::create([
-            'name' =>$request->name,
-            'description'=>$request->description,
-        ]);
-        if($exercise)
-            return $this->success($exercise, "Esercizio creato correttamente");
+        if($exerciseId === null){
+            $exercise = GymExercise::create([
+                'name' =>$request->name,
+                'description'=>$request->description,
+                'ambito'=>$request->ambito
+            ]);}
         else
-            return $this->error('', "Il nuovo esercizio non è stato creato", 500);
+            $exercise = GymExercise::where('id', $exerciseId)->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'ambito' => $request->ambito,
+            ]);
+        if($exercise)
+            return $this->success($exercise, "Esercizio creato/aggiornato correttamente");
+        else
+            return $this->error('', "Il nuovo esercizio non è stato creato/aggiornato", 500);
     }
 
     /**
@@ -79,9 +109,30 @@ class GymExerciseController extends Controller
         if($exercise)
             return $this->success($exercise, "Esercizio modificato correttamente");
         else
-            return $this->error('', "L' esercizio non è stato modificato", 500);
+            return $this->error('', "Impossibile modificare esercizio", 500);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function delete(int $exerciseId)
+    {
+        $toDelete = GymExercise::find($exerciseId);
+
+        if($toDelete) {
+            $deleted = $toDelete->delete();
+            GymExercisesLookup::where('gym_exercises_id', $exerciseId)->delete();
+            return $this->success($deleted, "Esercizio eliminato");
+        }else
+            return $this->error('', "Impossibile eliminare esercizio", 500);
+    }
+
+    public function getExerciseWithMedia(int $exerciseId){
+        $exercise = GymExercise::with('appMedia')->where('id',$exerciseId)->get();
+        if($exercise)
+            return $this->success($exercise, "Esercizio recuperato");
+        return $this->error('', "Impossibile recuperare esercizio", 500);
+    }
     /**
      * Remove the specified resource from storage.
      */

@@ -6,6 +6,25 @@ use Illuminate\Http\Request;
 
 class AppMediaController extends Controller
 {
+    public function upload(Request $request){
+        $request->validate([
+            'file.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+        foreach ($request->file('files') as $file) {
+            // Generazione di un nome unico per il file
+            $fileName = time() . '_' . $file->getClientOriginalName();
+
+            // Salvataggio del file nello storage pubblico
+            $filePath = $file->storeAs('public', $fileName);
+
+            // Salvataggio delle informazioni del file nel database
+            $fileEntry = new FileEntry();
+            $fileEntry->file_name = $fileName;
+            $fileEntry->file_path = $filePath;
+            $fileEntry->save();
+        }
+    }
+
     public function test(){
 
 //        $collection = collect(['primo'=>1, 2, 3, 4, 5]);

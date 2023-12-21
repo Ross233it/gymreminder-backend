@@ -47,6 +47,14 @@ class GymScheduleController extends Controller{
                 return $this->error('', 'Impossibile recuperare le schede', 500);
         }
 
+        public function schedulesList(){
+            $schedules = GymSchedule::select(['id', 'name', 'description'])->get();
+            if (isset($schedules))
+                return $this->success($schedules, 'Le schede utente recuperate', 200);
+            else
+                return $this->error('', 'Impossibile recuperare le schede', 500);
+        }
+
         public function duplicate($scheduleId){
             $schedule = GymSchedule::with("gymExercisesLookup")->find($scheduleId);
             $newSchedule = GymSchedule::create([
