@@ -3,28 +3,54 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Traits\HttpResponses;
+use App\Models\AppMedia;
+use Illuminate\Support\Facades\Storage;
 
 class AppMediaController extends Controller
 {
-    public function upload(Request $request){
-        $request->validate([
-            'file.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-        foreach ($request->file('files') as $file) {
-            // Generazione di un nome unico per il file
-            $fileName = time() . '_' . $file->getClientOriginalName();
+    use HttpResponses;
 
-            // Salvataggio del file nello storage pubblico
-            $filePath = $file->storeAs('public', $fileName);
+public function setExerciseMedia(Request $request, int $exerciseId){
+    $request->validate([
+        'files.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+    foreach ($request->file('files') as $file) {
+       // $random = substr((string) time(), -3);
+        $random = uniqid();
+        $hashedRandom = md5($random);
+        $hashedRandom = substr($hashedRandom, -5);
+        $fileName = 'esercizio-'.
+                    $request->exercise_id.
+                    "-".$hashedRandom.
+                    ".".$file->getClientOriginalExtension();
 
-            // Salvataggio delle informazioni del file nel database
-            $fileEntry = new FileEntry();
-            $fileEntry->file_name = $fileName;
-            $fileEntry->file_path = $filePath;
-            $fileEntry->save();
-        }
+        $filePath = $file->storeAs('public/exercises/exercise-'.$request->exercise_id, $fileName);
+        $fileUrl = '/storage/exercises/exercise-'.$request->exercise_id.'/'.$fileName;
+
+        $fileEntry = new AppMedia();
+        $fileEntry->exercise_id = $request->exercise_id;
+        $fileEntry->name = $fileName;
+        $fileEntry->path = $fileUrl;
+        $fileEntry->save();
     }
+    return $this->success("", "File salvati con successo");
+}
 
+public function delete(int $mediaId){
+    $toDelete = AppMedia::find($mediaId);
+
+    if($toDelete) {
+        $path = $toDelete->path;
+        $path = str_replace('/storage/', '/public/', $path);
+        $deleted = $toDelete->delete();
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+            return $this->success($deleted, "Il file è stato cancellato con successo");
+        }
+        return $this->error('', "Si è verificato un errore durante la cancellazione", 500);
+    }
+}
     public function test(){
 
 //        $collection = collect(['primo'=>1, 2, 3, 4, 5]);

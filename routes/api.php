@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AppMediaController;
 use App\Http\Controllers\GymScheduleController;
 use App\Http\Controllers\GymSessionsController;
 use App\Http\Controllers\GymExerciseController;
@@ -45,6 +46,9 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::post('/admin/schedules',                       [GymScheduleController::class, 'store']);
     Route::post('/admin/schedules/{scheduleId}',          [GymScheduleController::class, 'store']);
 
+    //Media - admin
+    Route::delete('/admin/app-media/{mediaId}',[AppMediaController::class, 'delete']);
+
     //Sessions - admin
     Route::post('/admin/sessions/{sessionId}/duplicate',[GymSessionsController::class, 'duplicate']);
     Route::post('/admin/sessions',                      [GymSessionsController::class, 'store']);
@@ -55,6 +59,7 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     //Exercises -admin
     Route::get('/admin/exercises',                        [GymExerciseController::class, 'indexAdmin']);
     Route::get('/admin/exercises/{exerciseId}/media',     [GymExerciseController::class, 'getExerciseWithMedia']);
+    Route::post('/admin/exercises/{exerciseId}/media',    [AppMediaController::class, 'setExerciseMedia']);
     Route::post('/admin/exercises/{exerciseId}/duplicate',[GymExerciseController::class, 'duplicate']);
     Route::post('/admin/exercises',                       [GymExerciseController::class, 'store']);
     Route::post('/admin/exercises/{exerciseId}',          [GymExerciseController::class, 'store']);
