@@ -11,8 +11,6 @@ class TasksController extends Controller
      */
     public function index(Request $request)
     {
-
-        //return response()->json($request);
         return response()->json(['message'=>'task raggiunto']);
     }
 
